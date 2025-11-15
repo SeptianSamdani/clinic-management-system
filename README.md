@@ -1,66 +1,309 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# 🏥 Sistem Manajemen Klinik - Vulnerable Version
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+> **⚠️ WARNING**: Aplikasi ini sengaja dibuat vulnerable untuk keperluan praktikum forensika digital. **JANGAN GUNAKAN DI PRODUCTION!**
 
-## About Laravel
+## 📖 Tentang Project
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Ini adalah sistem manajemen klinik kesehatan yang dibuat menggunakan Laravel 11 dengan **sengaja dimasukkan vulnerability** untuk pembelajaran forensika digital dan keamanan aplikasi web.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+### Fitur Utama
+- ✅ Multi-role system (Admin, Dokter, Pasien)
+- ✅ Manajemen rekam medis
+- ✅ Sistem appointment/janji temu
+- ✅ Forensic logging (untuk investigasi)
+- ⚠️ Vulnerability: SQL Injection
+- ⚠️ Vulnerability: XSS (Cross-Site Scripting)
+- ⚠️ Vulnerability: Broken Access Control
+- ⚠️ Vulnerability: No CSRF Protection
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+---
 
-## Learning Laravel
+## 🛠️ Tech Stack
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Framework**: Laravel 11+
+- **Database**: MySQL 8.0+
+- **Frontend**: Tailwind CSS + Alpine.js
+- **Template Engine**: Blade
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+---
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+## 📦 Instalasi
 
-## Laravel Sponsors
+### Requirement
+- PHP 8.2+
+- Composer
+- MySQL 8.0+
+- Node.js & NPM
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Langkah Install
 
-### Premium Partners
+```bash
+# 1. Clone repository
+git clone https://github.com/your-username/clinic-management.git
+cd clinic-management
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+# 2. Install dependencies
+composer install
+npm install
 
-## Contributing
+# 3. Setup environment
+cp .env.example .env
+php artisan key:generate
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+# 4. Konfigurasi database di .env
+DB_DATABASE=clinic_forensic
+DB_USERNAME=root
+DB_PASSWORD=
 
-## Code of Conduct
+# 5. Buat database
+# Buka MySQL dan jalankan:
+# CREATE DATABASE clinic_forensic;
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+# 6. Migrasi & Seeding
+php artisan migrate:fresh --seed
 
-## Security Vulnerabilities
+# 7. Build assets
+npm run build
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+# 8. Jalankan server
+php artisan serve
+```
 
-## License
+Akses: http://localhost:8000
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+---
+
+## 👥 Default Users
+
+| Role | Email | Password |
+|------|-------|----------|
+| Admin | admin@klinik.com | password |
+| Dokter | budi.santoso@klinik.com | password |
+| Pasien | (lihat di seeder) | password |
+
+---
+
+## 🎭 Skenario Vulnerability
+
+### 1. SQL Injection
+**Location**: Patient search, Medical records search  
+**How to exploit**:
+```
+/admin/patients?search=' OR 1=1 --
+/doctor/medical-records?search=' UNION SELECT * FROM users --
+```
+
+### 2. XSS (Cross-Site Scripting)
+**Location**: Medical record notes field  
+**How to exploit**:
+```html
+<script>alert('XSS')</script>
+<img src=x onerror="alert('XSS')">
+```
+
+### 3. Broken Access Control
+**Location**: Medical records detail  
+**How to exploit**:
+```
+Login sebagai Doctor A
+Akses: /doctor/medical-records/1 (miliknya) ✅
+Ubah: /doctor/medical-records/20 (milik Doctor B) ❌
+System tetap menampilkan! (VULNERABILITY)
+```
+
+### 4. No CSRF Protection
+**Impact**: Semua form vulnerable terhadap CSRF attack
+
+---
+
+## 🔍 Forensic Investigation
+
+### Simulasi Attack
+```bash
+# Jalankan simulasi serangan otomatis
+php artisan forensic:simulate-balanced-attack
+```
+
+### Investigasi
+```bash
+# Investigate unauthorized access
+php artisan forensic:investigate --doctor=budi.santoso@klinik.com
+```
+
+### Manual Investigation
+```bash
+php artisan tinker
+
+# Cek security events
+DB::table('security_events')->where('event_type', 'unauthorized_medical_record_access')->get();
+
+# Cek audit trails
+DB::table('audit_trails')->where('action', 'unauthorized_view')->get();
+
+# Lihat request logs
+DB::table('request_logs')->where('user_id', $userId)->orderBy('created_at')->get();
+```
+
+---
+
+## 📊 Database Tables untuk Forensik
+
+| Table | Purpose |
+|-------|---------|
+| `request_logs` | Semua HTTP request |
+| `sql_logs` | Semua SQL query yang dieksekusi |
+| `audit_trails` | Perubahan data (create, update, delete) |
+| `security_events` | Suspicious activities terdeteksi |
+
+---
+
+## 🎓 Untuk Praktikum
+
+### Langkah Mahasiswa:
+
+1. **Setup Environment**
+   ```bash
+   git clone [repository]
+   composer install && npm install
+   php artisan migrate:fresh --seed
+   ```
+
+2. **Manual Attack**
+   - Login sebagai doctor
+   - Akses medical record yang bukan miliknya
+   - Dokumentasikan prosesnya
+
+3. **Investigation**
+   - Gunakan command `forensic:investigate`
+   - Query database untuk evidence
+   - Buat timeline serangan
+
+4. **Laporan**
+   - Gunakan template yang disediakan
+   - Include screenshots
+   - Berikan rekomendasi fix
+
+### Template Laporan
+Lihat: `docs/LAPORAN_TEMPLATE.md`
+
+---
+
+## 🔐 How to Fix (Secure Version)
+
+### Fix Broken Access Control
+```php
+// BEFORE (Vulnerable)
+public function show($id) {
+    $record = MedicalRecord::findOrFail($id);
+    return view('show', compact('record'));
+}
+
+// AFTER (Secure)
+public function show($id) {
+    $record = MedicalRecord::findOrFail($id);
+    
+    // CHECK OWNERSHIP
+    if ($record->doctor_id !== auth()->user()->doctor->id) {
+        abort(403, 'Unauthorized');
+    }
+    
+    return view('show', compact('record'));
+}
+```
+
+### Fix SQL Injection
+```php
+// BEFORE (Vulnerable)
+$query = "SELECT * FROM patients WHERE name LIKE '%{$search}%'";
+$results = DB::select($query);
+
+// AFTER (Secure)
+$results = Patient::where('name', 'like', "%{$search}%")->get();
+// Or use parameter binding
+```
+
+### Fix XSS
+```blade
+{{-- BEFORE (Vulnerable) --}}
+{!! $record->notes !!}
+
+{{-- AFTER (Secure) --}}
+{{ $record->notes }}
+```
+
+---
+
+## 📁 Struktur Project
+
+```
+clinic-management/
+├── app/
+│   ├── Console/Commands/         # Forensic commands
+│   ├── Http/
+│   │   ├── Controllers/          # Controllers (Vulnerable)
+│   │   └── Middleware/           # Forensic logging
+│   ├── Models/                   # Eloquent models
+│   └── Observers/                # Audit trail observer
+├── database/
+│   ├── migrations/               # Database schema
+│   └── seeders/                  # Data dummy
+├── resources/
+│   └── views/                    # Blade templates
+├── routes/
+│   └── web.php                   # Routes definition
+└── README.md
+```
+
+---
+
+## 🐛 Known Issues (Intentional)
+
+- ❌ No CSRF protection
+- ❌ SQL Injection vulnerable
+- ❌ XSS vulnerable
+- ❌ Broken Access Control
+- ❌ No rate limiting
+- ❌ Debug mode ON
+- ❌ Verbose error messages
+
+**Ini semua SENGAJA untuk pembelajaran!**
+
+---
+
+## 📚 References
+
+- [OWASP Top 10](https://owasp.org/Top10/)
+- [Laravel Security Best Practices](https://laravel.com/docs/11.x/security)
+- [Digital Forensics Process](https://www.nist.gov/publications)
+
+---
+
+## 📝 License
+
+Untuk keperluan edukasi saja. Tidak untuk penggunaan komersial atau production.
+
+---
+
+## 👨‍💻 Author
+
+**Nama**: [Nama Anda]  
+**NIM**: [NIM Anda]  
+**Mata Kuliah**: Forensika Digital  
+**Dosen**: [Nama Dosen]  
+**Tahun**: 2024
+
+---
+
+## 🤝 Contributing
+
+Pull requests welcome untuk perbaikan dokumentasi atau penambahan skenario vulnerability baru.
+
+---
+
+## ⚠️ Disclaimer
+
+Aplikasi ini dibuat untuk keperluan edukasi dan praktikum. Jangan gunakan kode ini di aplikasi production atau environment nyata. Author tidak bertanggung jawab atas penyalahgunaan kode ini.
+
+---
+
+**Happy Learning! 🎓🔍**
