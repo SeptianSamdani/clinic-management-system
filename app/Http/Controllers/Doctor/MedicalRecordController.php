@@ -79,6 +79,8 @@ class MedicalRecordController extends Controller
 
     public function show($id)
     {
+        $currentDoctor = auth()->user()->doctor;
+        
         // VULNERABLE: SQL Injection
         $query = "
             SELECT medical_records.*, 
@@ -99,6 +101,44 @@ class MedicalRecordController extends Controller
         }
         
         $record = $record[0];
+
+        // FORENSIC LOGGING - Detect unauthorized access
+        $isAuthorized = ($record->doctor_id == $currentDoctor->id);
+        
+        // Log to audit_trails
+        DB::table('audit_trails')->insert([
+            'table_name' => 'medical_records',
+            'action' => $isAuthorized ? 'view' : 'unauthorized_view',
+            'record_id' => $id,
+            'old_values' => null,
+            'new_values' => json_encode([
+                'record_owner_doctor_id' => $record->doctor_id,
+                'accessing_doctor_id' => $currentDoctor->id,
+                'is_authorized' => $isAuthorized,
+            ]),
+            'user_id' => auth()->id(),
+            'ip_address' => request()->ip(),
+            'created_at' => now(),
+        ]);
+
+        // Log security event if unauthorized
+        if (!$isAuthorized) {
+            DB::table('security_events')->insert([
+                'event_type' => 'unauthorized_medical_record_access',
+                'severity' => 'high',
+                'description' => "Doctor ID {$currentDoctor->id} accessed medical record ID {$id} owned by Doctor ID {$record->doctor_id}",
+                'evidence' => json_encode([
+                    'record_id' => $id,
+                    'patient_id' => $record->patient_id,
+                    'record_owner' => $record->doctor_id,
+                    'accessor' => $currentDoctor->id,
+                    'patient_name' => $record->patient_name,
+                ]),
+                'ip_address' => request()->ip(),
+                'user_id' => auth()->id(),
+                'created_at' => now(),
+            ]);
+        }
 
         return view('doctor.medical-records.show', compact('record'));
     }

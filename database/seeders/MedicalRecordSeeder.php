@@ -64,21 +64,53 @@ class MedicalRecordSeeder extends Seeder
             'Asam folat, Vitamin C 1x1',
         ];
 
-        // Create 100 medical records
-        for ($i = 0; $i < 100; $i++) {
-            $patient = $patients->random();
-            $doctor = $doctors->random();
-            $visitDate = Carbon::now()->subDays(rand(1, 365));
+        // IMPORTANT: Assign patients to specific doctors
+        // Doctor 1 (Budi Santoso) gets patients 1-10
+        // Doctor 2 (Sarah Wijaya) gets patients 11-20
+        // Doctor 3 (Ahmad Fauzi) gets patients 21-30
+        // etc.
 
+        $recordId = 1;
+        foreach ($doctors as $doctorIndex => $doctor) {
+            // Each doctor gets 10 patients
+            $startPatient = ($doctorIndex * 10);
+            $endPatient = $startPatient + 10;
+            
+            $doctorPatients = $patients->slice($startPatient, 10);
+            
+            foreach ($doctorPatients as $patient) {
+                // Create 1-3 records per patient
+                $numRecords = rand(1, 3);
+                
+                for ($i = 0; $i < $numRecords; $i++) {
+                    $visitDate = Carbon::now()->subDays(rand(1, 365));
+
+                    MedicalRecord::create([
+                        'patient_id' => $patient->id,
+                        'doctor_id' => $doctor->id,
+                        'visit_date' => $visitDate,
+                        'complaint' => $complaints[array_rand($complaints)],
+                        'diagnosis' => $diagnoses[array_rand($diagnoses)],
+                        'treatment' => $treatments[array_rand($treatments)],
+                        'prescription' => $prescriptions[array_rand($prescriptions)],
+                        'notes' => 'Pasien kooperatif. Follow up 1 minggu.',
+                    ]);
+                }
+            }
+        }
+
+        // Add some cross-doctor records (konsultasi antar dokter)
+        // This is NORMAL behavior
+        for ($i = 0; $i < 5; $i++) {
             MedicalRecord::create([
-                'patient_id' => $patient->id,
-                'doctor_id' => $doctor->id,
-                'visit_date' => $visitDate,
+                'patient_id' => $patients->random()->id,
+                'doctor_id' => $doctors->random()->id,
+                'visit_date' => Carbon::now()->subDays(rand(1, 30)),
                 'complaint' => $complaints[array_rand($complaints)],
-                'diagnosis' => $diagnoses[array_rand($diagnoses)],
+                'diagnosis' => 'Konsultasi kedua/rujukan',
                 'treatment' => $treatments[array_rand($treatments)],
                 'prescription' => $prescriptions[array_rand($prescriptions)],
-                'notes' => 'Pasien kooperatif. Follow up 1 minggu.',
+                'notes' => 'Pasien rujukan dari dokter lain.',
             ]);
         }
     }
