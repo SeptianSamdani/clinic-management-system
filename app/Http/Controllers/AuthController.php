@@ -37,6 +37,8 @@ class AuthController extends Controller
                         return redirect()->route('admin.dashboard');
                     case 'doctor':
                         return redirect()->route('doctor.dashboard');
+                    case 'nurse': 
+                        return redirect()->route('nurse.dashboard');
                     default:
                         return redirect()->route('patient.dashboard');
                 }

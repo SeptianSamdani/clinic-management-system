@@ -106,6 +106,22 @@ Route::middleware(['auth'])->group(function () {
         // Profile
         Route::get('/profile', [PatientDashboardController::class, 'profile'])->name('profile');
     });
+
+    // Nurse Routes
+    Route::middleware(['auth', 'role:nurse'])->prefix('nurse')->name('nurse.')->group(function () {
+        Route::get('/dashboard', [App\Http\Controllers\Nurse\DashboardController::class, 'index'])->name('dashboard');
+        
+        // Patient Management
+        Route::get('/patients', [App\Http\Controllers\Nurse\PatientController::class, 'index'])->name('patients.index');
+        Route::get('/patients/create', [App\Http\Controllers\Nurse\PatientController::class, 'create'])->name('patients.create');
+        Route::post('/patients', [App\Http\Controllers\Nurse\PatientController::class, 'store'])->name('patients.store');
+        Route::get('/patients/{id}', [App\Http\Controllers\Nurse\PatientController::class, 'show'])->name('patients.show');
+
+        // VULNERABLE ROUTE - No access control
+        Route::get('/patients/{patientId}/medical-records', 
+            [App\Http\Controllers\Nurse\PatientController::class, 'viewMedicalRecords'])
+        ->name('patients.medical-records');
+    });
 });
 
 // ===========================================

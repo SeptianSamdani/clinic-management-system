@@ -68,6 +68,15 @@
                             </svg>
                             Jadwal
                         </a>
+                    @elseif(auth()->user()->isNurse())
+                        <a href="{{ route('nurse.dashboard') }}" 
+                        class="border-transparent text-gray-500 hover:border-primary-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
+                            Dashboard
+                        </a>
+                        <a href="{{ route('nurse.patients.index') }}" 
+                        class="border-transparent text-gray-500 hover:border-primary-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition">
+                            Daftar Pasien
+                        </a>
                     @else
                         <a href="{{ route('patient.dashboard') }}" 
                            class="border-transparent text-gray-500 hover:border-primary-500 hover:text-gray-700 inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition
