@@ -42,12 +42,14 @@ class DashboardController extends Controller
         return view('patient.medical-records.index', compact('medicalRecords'));
     }
 
+    // ============================================
+    // VULNERABLE: No ownership check (IDOR)
+    // Patient bisa akses medical record patient lain
+    // ============================================
     public function showMedicalRecord($id)
     {
-        $patient = auth()->user()->patient;
-        
-        $record = MedicalRecord::where('patient_id', $patient->id)
-            ->where('id', $id)
+        // VULNERABLE: Removed ownership check
+        $record = MedicalRecord::where('id', $id)  // ❌ No patient_id check
             ->with('doctor.user')
             ->firstOrFail();
         

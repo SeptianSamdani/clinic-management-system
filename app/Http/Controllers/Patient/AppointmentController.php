@@ -50,24 +50,28 @@ class AppointmentController extends Controller
             ->with('success', 'Janji temu berhasil dibuat');
     }
 
+    // ============================================
+    // VULNERABLE: No ownership check (IDOR)
+    // Patient bisa akses appointment patient lain
+    // ============================================
     public function show($id)
     {
-        $patient = auth()->user()->patient;
-        
-        $appointment = Appointment::where('patient_id', $patient->id)
-            ->where('id', $id)
+        // VULNERABLE: Removed ownership check
+        $appointment = Appointment::where('id', $id)  // ❌ No patient_id check
             ->with('doctor.user')
             ->firstOrFail();
         
         return view('patient.appointments.show', compact('appointment'));
     }
 
+    // ============================================
+    // VULNERABLE: No ownership check
+    // Patient bisa cancel appointment patient lain
+    // ============================================
     public function cancel($id)
     {
-        $patient = auth()->user()->patient;
-        
-        $appointment = Appointment::where('patient_id', $patient->id)
-            ->where('id', $id)
+        // VULNERABLE: Removed ownership check
+        $appointment = Appointment::where('id', $id)  // ❌ No patient_id check
             ->firstOrFail();
         
         if ($appointment->status === 'completed') {

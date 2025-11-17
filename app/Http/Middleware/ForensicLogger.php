@@ -55,43 +55,38 @@ class ForensicLogger
      */
     private function detectSuspiciousActivity(Request $request): void
     {
+        // Check raw input (before JSON encode)
+        $allInput = '';
+        foreach ($request->all() as $key => $value) {
+            if (is_string($value)) {
+                $allInput .= $value . ' ';
+            }
+        }
+        
+        // Also check URL
+        $allInput .= $request->fullUrl();
+        
         $suspiciousPatterns = [
             'sql_injection' => [
-                "/'.*OR.*'/i",
-                "/UNION.*SELECT/i",
-                "/--/",
-                "/;.*DROP/i",
-                "/;.*DELETE/i",
-                "/;.*UPDATE/i",
-                "/;.*INSERT/i",
-                "/0x[0-9a-f]+/i",
-                "/CONCAT\(/i",
-                "/CHAR\(/i",
+                "/' OR /i",
+                "/' AND /i",
+                "/UNION SELECT/i",
+                "/-- -/",
+                "/'=''/i",
             ],
             'xss_attempt' => [
                 "/<script/i",
-                "/<iframe/i",
-                "/javascript:/i",
-                "/onerror=/i",
-                "/onload=/i",
-                "/onclick=/i",
-                "/<img.*src/i",
                 "/alert\(/i",
-                "/eval\(/i",
-            ],
-            'path_traversal' => [
-                "/\.\.\//",
-                "/\.\.\\\/",
+                "/onerror=/i",
+                "/<img.*src=/i",
             ],
         ];
 
-        $allInput = json_encode($request->all());
-        
         foreach ($suspiciousPatterns as $eventType => $patterns) {
             foreach ($patterns as $pattern) {
                 if (preg_match($pattern, $allInput)) {
                     $this->logSecurityEvent($eventType, $request, $pattern, $allInput);
-                    break 2; // Stop after first match to avoid duplicate logs
+                    break 2;
                 }
             }
         }
