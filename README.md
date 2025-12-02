@@ -286,11 +286,8 @@ Untuk keperluan edukasi saja. Tidak untuk penggunaan komersial atau production.
 
 ## 👨‍💻 Author
 
-**Nama**: [Nama Anda]  
-**NIM**: [NIM Anda]  
-**Mata Kuliah**: Forensika Digital  
-**Dosen**: [Nama Dosen]  
-**Tahun**: 2024
+**Nama**: Septian Samdani  
+**NIM**: 227007072
 
 ---
 
